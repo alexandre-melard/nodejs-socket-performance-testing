@@ -1,0 +1,13 @@
+{
+  "name": "sockets-testing",
+  "version": "1.0.0",
+  "description": "async socket testing, launch using node server.js and node client.js first",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "alexandre@melard.fr",
+  "license": "ISC",
+  "dependencies": {}
+}
