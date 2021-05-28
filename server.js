@@ -42,13 +42,12 @@ let net = require('net');
 let num = 0;
 let sockets = new Map();
 const STATS_DELAY = 10000;
-let received = new MessageBuffer("\n")
 
 async function readData(id, data) {
-  received.push(data);
-  if (received.ready()) {
-    const message = received.handleData()
-    let socket = sockets.get(id);
+  let socket = sockets.get(id);
+  socket.buffer.push(data);
+  if (socket.buffer.ready()) {
+    const message = socket.buffer.handleData()
     let stats = socket.stats;
     if (!socket.name) {      
       const name = message.replace(this.delimiter, '');
@@ -77,7 +76,7 @@ async function stats() {
     if (sockets.size == 0) {
       console.log('waiting for client to connect');
     }
-    sockets.forEach((socket, id) => {
+    sockets.forEach((socket) => {
       let stats = socket.stats;
       console.log(`client ${socket.name} received ${avgSpeed(stats.lastReceived)} msg/s and sent ${avgSpeed(stats.lastSent)} msg/s [s: ${stats.sent}, r: ${stats.received}]`);
       stats.lastReceived = 0;
@@ -92,6 +91,7 @@ let server = net.createServer(function (socket) {
   sockets.set(id, {
     'name': undefined,
     'socket': socket,
+    'buffer': new MessageBuffer("\n"),
     'stats': {
       'received': 0,
       'sent': 0,
